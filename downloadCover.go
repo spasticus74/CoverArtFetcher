@@ -9,7 +9,7 @@ import (
 	"log"
 	"os"
 
-	caa "github.com/spasticus74/gocaa"
+	caa "github.com/mineo/gocaa"
 )
 
 func DownloadCover(mbid, outputDir, name string) error {

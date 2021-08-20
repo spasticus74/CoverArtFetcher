@@ -11,9 +11,9 @@ github.com/michiwend/golang-pretty v0.0.0-20141116172505-8ac61812ea3f h1:oF0u/1V
 github.com/michiwend/golang-pretty v0.0.0-20141116172505-8ac61812ea3f/go.mod h1:k0nOQg5bmAmEwWAuodvib9B74Oyny6aRMpkBcVWEtKs=
 github.com/michiwend/gomusicbrainz v0.0.0-20181012083520-6c07e13dd396 h1:REpvt1iVqbiiBk2TihujngsSpHHMHiB/JBkQH/qkq8s=
 github.com/michiwend/gomusicbrainz v0.0.0-20181012083520-6c07e13dd396/go.mod h1:HKpGCk/zijJ9GXdTWgtpnd5BbKDXtN0OQ3E4/zpxOwM=
+github.com/mineo/gocaa v0.0.0-20181004170524-8dc0fb0f6922 h1:Acuh7IjLhLscBtjtJQDTB7IWM2HqbvS0JqkQ6xtIWgs=
+github.com/mineo/gocaa v0.0.0-20181004170524-8dc0fb0f6922/go.mod h1:YfNAg9U5IESZ1bxBh8PXO3OG8/pXbdegUhYoxywpbXo=
 github.com/pborman/uuid v1.2.1 h1:+ZZIw58t/ozdjRaXh/3awHfmWRbzYxJoAdNJxe/3pvw=
 github.com/pborman/uuid v1.2.1/go.mod h1:X/NO0urCmaxf9VXbdlT7C2Yzkj2IKimNn4k+gtPdI/k=
-github.com/spasticus74/gocaa v0.0.0-20181004170524-8dc0fb0f6922 h1:uLt1aZqkz4hL8Hhn31doOUykXSeoADjULFOomaWfVJ4=
-github.com/spasticus74/gocaa v0.0.0-20181004170524-8dc0fb0f6922/go.mod h1:FlxgrwviVrNmprwVF3P4Gx730jidnyjo7zYOJI1IuR0=
 gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c h1:Hei/4ADfdWqJk1ZMxUNpqntNwaWcugrBjAiHlqqRiVk=
 gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c/go.mod h1:JHkPIbrfpd72SG/EVd6muEfDQjcINNoR0C8j2r3qZ4Q=

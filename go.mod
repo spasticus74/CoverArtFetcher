@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/michiwend/gomusicbrainz v0.0.0-20181012083520-6c07e13dd396
-	github.com/spasticus74/gocaa v0.0.0-20181004170524-8dc0fb0f6922
+	github.com/mineo/gocaa v0.0.0-20181004170524-8dc0fb0f6922
 )
 
 require (
