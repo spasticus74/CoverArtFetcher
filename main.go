@@ -11,7 +11,7 @@ func main() {
 
 	artistPtr := flag.String("a", "", "The artist")
 	recordingPtr := flag.String("r", "", "The recording")
-	destinationPtr := flag.String("d", ".", "THe directory to write the output to.")
+	destinationPtr := flag.String("d", ".", "The directory to write the output to.")
 
 	flag.Parse()
 
@@ -21,10 +21,10 @@ func main() {
 
 	var artistName, artistMBID = SearchArtistMBID(*artistPtr)
 	if artistName == "[no artist]" {
-		fmt.Println("No Artist matching '", *artistPtr, "' was found.")
+		fmt.Printf("No Artist matching '%s' was found.\n", *artistPtr)
 		os.Exit(1)
 	} else if artistName != *artistPtr {
-		fmt.Println("No Artist matching '", *artistPtr, "' was found. Did you mean '", artistName, "?")
+		fmt.Printf("No Artist matching '%s' was found. Did you mean '%s'?\n", *artistPtr, artistName)
 		os.Exit(1)
 	}
 	fmt.Printf("Found Artist '%s' with MBID %s\n", *artistPtr, artistMBID)
