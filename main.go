@@ -2,42 +2,29 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
-	"os"
 )
 
 func main() {
 
-	artistPtr := flag.String("a", "", "The artist")
-	recordingPtr := flag.String("r", "", "The recording")
-	destinationPtr := flag.String("d", ".", "The directory to write the output to.")
+	// Two ways to use this.
+	// 1. Fetch a specific album/recording
+	artistPtr := flag.String("a", "", "The artist.")
+	recordingPtr := flag.String("r", "", "The recording.")
+	destinationPtr := flag.String("o", ".", "The directory to write the output to.")
+
+	// 2. Point it to the Navidrome DB & music library and let it find missing covers
+	dbPtr := flag.String("d", "", "Path to the Navidrome database.")
+	libraryPtr := flag.String("l", "", "Path to the music library.")
+	maxCountPtr := flag.Int("c", 10, "Max number of covers to fetch")
 
 	flag.Parse()
 
-	if (len(*artistPtr) == 0) || (len(*recordingPtr) == 0) {
-		log.Fatal("You must provide both an Artist and a Recording name")
-	}
-
-	var artistName, artistMBID = SearchArtistMBID(*artistPtr)
-	if artistName == "[no artist]" {
-		fmt.Printf("No Artist matching '%s' was found.\n", *artistPtr)
-		os.Exit(1)
-	} else if artistName != *artistPtr {
-		fmt.Printf("No Artist matching '%s' was found. Did you mean '%s'?\n", *artistPtr, artistName)
-		os.Exit(1)
-	}
-	fmt.Printf("Found Artist '%s' with MBID %s\n", *artistPtr, artistMBID)
-
-	recordingMBID, err := SearchReleaseMBID(artistMBID, *recordingPtr)
-	if err != nil {
-		log.Fatal("Error finding release ID: ", err)
+	if (len(*artistPtr) > 0) && (len(*recordingPtr) > 0) {
+		FetchCover(*artistPtr, *recordingPtr, *destinationPtr)
+	} else if (len(*dbPtr) > 0) && (len(*libraryPtr) > 0) {
+		FetchRandomMissing(*dbPtr, *libraryPtr, *maxCountPtr)
 	} else {
-		fmt.Printf("  Found Release '%s' with MBID %s.\n  Downloading ...\n", *recordingPtr, recordingMBID)
-		err = DownloadCover(recordingMBID, *destinationPtr, *recordingPtr)
-		if err != nil {
-			log.Fatal("Error downloading cover image: ", err)
-		}
-		fmt.Println("  Done.")
+		log.Fatal("You must provide both an Artist and a Recording name, or a database and library path.")
 	}
 }

@@ -14,6 +14,7 @@ require (
 
 require (
 	github.com/google/uuid v1.0.0 // indirect
+	github.com/mattn/go-sqlite3 v1.14.8
 	github.com/pborman/uuid v1.2.1 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 )
