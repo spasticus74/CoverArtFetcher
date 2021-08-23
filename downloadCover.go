@@ -17,7 +17,7 @@ import (
 func downloadCover(releaseID, outputDestination string) error {
 	c := caa.NewCAAClient("CoverArtFetcher")
 
-	log.Println("Downloading '", releaseID, "' to '", outputDestination, "'")
+	log.Printf("Downloading '%s' to '%s'\n", releaseID, outputDestination)
 	imgData, err := c.GetReleaseFront(caa.StringToUUID(releaseID), 0)
 	if err != nil {
 		return err
@@ -59,14 +59,14 @@ func downloadCover(releaseID, outputDestination string) error {
 }
 
 func getReleaseMBID(artist, release string) (string, error) {
-	log.Println("Searching for '", artist, "' - '", release, " ...")
+	log.Printf("Searching for '%s' - '%s' ...\n", artist, release)
 
 	var artistName, artistMBID = SearchArtistMBID(artist)
 	if artistName == "[no artist]" {
-		log.Println("No Artist matching '", artist, "' was found.")
+		log.Printf("No Artist matching '%s' was found.\n", artist)
 		return "", errors.New("Artist not found")
 	} else if artistName != artist {
-		log.Println("No Artist matching '", artist, "' was found. Did you mean '", artistName, "'?")
+		log.Printf("No Artist matching '%s' was found. Did you mean '%s'?\n", artist, artistName)
 		return "", errors.New("Artist not found")
 	}
 
@@ -74,7 +74,7 @@ func getReleaseMBID(artist, release string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	log.Println("Found Release '", release, "' with MBID ", recordingMBID)
+	log.Printf("Found Release '%s' with MBID '%s'\n", release, recordingMBID)
 
 	return recordingMBID, nil
 }
@@ -86,8 +86,6 @@ func FetchCover(artist, release, outputDir string) {
 		log.Fatal("Release MBID not found:", err)
 	}
 
-	cover := make(map[string]string)
-	cover[relMBID] = outputDir + "/" + release
 	downloadErrors := downloadCover(relMBID, outputDir+"/"+release+"/"+release)
 	if downloadErrors != nil {
 		log.Fatal("Failed to download cover:", err)
