@@ -110,6 +110,7 @@ func FetchRandomMissing(dbPath, albumPath string, maxAlbums int) {
 	if err != nil {
 		log.Fatal("Error retrieving data from database:", err)
 	}
+	defer rows.Close()
 
 	for rows.Next() {
 		err = rows.Scan(&album, &artist)
@@ -129,5 +130,4 @@ func FetchRandomMissing(dbPath, albumPath string, maxAlbums int) {
 			continue
 		}
 	}
-	rows.Close()
 }
