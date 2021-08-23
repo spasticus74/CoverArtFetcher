@@ -10,6 +10,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"strings"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -68,8 +69,12 @@ func getReleaseMBID(artist, release string) (string, error) {
 		log.Printf("No Artist matching '%s' was found.\n", artist)
 		return "", errors.New("Artist not found")
 	} else if artistName != artist {
-		log.Printf("No Artist matching '%s' was found. Did you mean '%s'?\n", artist, artistName)
-		return "", errors.New("Artist not found")
+		if strings.ToLower(artistName) == strings.ToLower(artist) {
+			artistName, artistMBID = SearchArtistMBID(artistName)
+		} else {
+			log.Printf("No Artist matching '%s' was found. Did you mean '%s'?\n", artist, artistName)
+			return "", errors.New("Artist not found")
+		}
 	}
 
 	recordingMBID, err := SearchReleaseMBID(artistMBID, release)
