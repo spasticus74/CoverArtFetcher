@@ -30,6 +30,7 @@ func main() {
 		}
 
 		log.SetOutput(file)
+		log.Println("----")
 	}
 
 	if (len(*artistPtr) > 0) && (len(*recordingPtr) > 0) {

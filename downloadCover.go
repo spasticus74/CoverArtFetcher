@@ -8,7 +8,9 @@ import (
 	"image/jpeg"
 	"image/png"
 	"log"
+	"math/rand"
 	"os"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 	caa "github.com/mineo/gocaa"
@@ -108,7 +110,15 @@ func FetchRandomMissing(dbPath, albumPath string, maxAlbums int) {
 	}
 	defer rows.Close()
 
+	// pause a random few seconds between requests so we don't hammer the server
+	s1 := rand.NewSource(time.Now().UnixNano())
+	r1 := rand.New(s1)
+
 	for rows.Next() {
+
+		pauseSeconds := r1.Intn(10) + 5 // 5 to 15 seconds
+		time.Sleep(time.Duration(pauseSeconds) * time.Second)
+
 		err = rows.Scan(&album, &artist)
 		if err != nil {
 			log.Fatal("Error processing data: ", err)
