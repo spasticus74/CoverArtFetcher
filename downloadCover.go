@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"database/sql"
 	"errors"
-	"fmt"
 	"image"
 	"image/jpeg"
 	"image/png"
@@ -18,7 +17,7 @@ import (
 func downloadCover(releaseID, outputDestination string) error {
 	c := caa.NewCAAClient("CoverArtFetcher")
 
-	fmt.Printf("Downloading '%s' to '%s'\n", releaseID, outputDestination)
+	log.Println("Downloading '", releaseID, "' to '", outputDestination, "'")
 	imgData, err := c.GetReleaseFront(caa.StringToUUID(releaseID), 0)
 	if err != nil {
 		return err
@@ -60,23 +59,22 @@ func downloadCover(releaseID, outputDestination string) error {
 }
 
 func getReleaseMBID(artist, release string) (string, error) {
-	fmt.Printf("Searcing for '%s' - '%s' ...\n", artist, release)
+	log.Println("Searching for '", artist, "' - '", release, " ...")
 
 	var artistName, artistMBID = SearchArtistMBID(artist)
 	if artistName == "[no artist]" {
-		fmt.Printf("  No Artist matching '%s' was found.\n", artist)
+		log.Println("No Artist matching '", artist, "' was found.")
 		return "", errors.New("Artist not found")
 	} else if artistName != artist {
-		fmt.Printf("  No Artist matching '%s' was found. Did you mean '%s'?\n", artist, artistName)
+		log.Println("No Artist matching '", artist, "' was found. Did you mean '", artistName, "'?")
 		return "", errors.New("Artist not found")
 	}
 
-	//fmt.Printf("Found Artist '%s' with MBID %s\n", artist, artistMBID)
 	recordingMBID, err := SearchReleaseMBID(artistMBID, release)
 	if err != nil {
 		return "", err
 	}
-	fmt.Printf("  Found Release '%s' with MBID %s\n", release, recordingMBID)
+	log.Println("Found Release '", release, "' with MBID ", recordingMBID)
 
 	return recordingMBID, nil
 }
@@ -120,13 +118,13 @@ func FetchRandomMissing(dbPath, albumPath string, maxAlbums int) {
 
 		relMBID, err := getReleaseMBID(artist, album)
 		if err != nil {
-			fmt.Println("Release MBID not found:", err)
+			log.Println("Release MBID not found:", err)
 			continue
 		}
 
 		err = downloadCover(relMBID, albumPath+"/"+artist+"/"+album+"/Folder")
 		if err != nil {
-			fmt.Println("Failed to download cover:", err)
+			log.Println("Failed to download cover:", err)
 			continue
 		}
 	}

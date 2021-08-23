@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"log"
+	"os"
 )
 
 func main() {
@@ -15,10 +16,21 @@ func main() {
 
 	// 2. Point it to the Navidrome DB & music library and let it find missing covers
 	dbPtr := flag.String("d", "", "Path to the Navidrome database.")
-	libraryPtr := flag.String("l", "", "Path to the music library.")
+	libraryPtr := flag.String("m", "", "Path to the music library.")
 	maxCountPtr := flag.Int("c", 10, "Max number of covers to fetch")
 
+	logPtr := flag.String("l", "", "Path to log file")
+
 	flag.Parse()
+
+	if len(*logPtr) > 0 {
+		file, err := os.OpenFile(*logPtr, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		log.SetOutput(file)
+	}
 
 	if (len(*artistPtr) > 0) && (len(*recordingPtr) > 0) {
 		FetchCover(*artistPtr, *recordingPtr, *destinationPtr)

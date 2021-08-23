@@ -37,17 +37,15 @@ func SearchReleaseMBID(artistID, name string) (string, error) {
 	client, _ := gomusicbrainz.NewWS2Client(
 		"https://musicbrainz.org/ws/2",
 		"CoverArtFetcher",
-		"0.0.1-alpha",
+		"0.0.1-beta",
 		"spasticus74@gmail.com")
 
 	// Search for the recording
 	searchTerm := recordingSearchPrefix + name + "\" AND arid:\"" + artistID + "\"`"
-	//fmt.Println(searchTerm)
 	resp, _ := client.SearchRelease(searchTerm, -1, -1)
 
 	for _, rec := range resp.Releases {
 		for _, a := range rec.ArtistCredit.NameCredits {
-			//fmt.Println("T: ", rec.Title, ", A: ", a.Artist.Name, ", ID: ", string(rec.Id()))
 			if (a.Artist.ID == gomusicbrainz.MBID(artistID)) && strings.EqualFold(rec.Title, name) {
 				return string(rec.Id()), nil
 			}
