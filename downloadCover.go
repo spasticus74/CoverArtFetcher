@@ -20,7 +20,7 @@ import (
 func downloadCover(releaseID, outputDestination string) error {
 	c := caa.NewCAAClient("CoverArtFetcher")
 
-	log.Printf("Downloading '%s' to '%s'\n", releaseID, outputDestination)
+	log.Printf("  Downloading '%s' to '%s'\n", releaseID, outputDestination)
 	imgData, err := c.GetReleaseFront(caa.StringToUUID(releaseID), 0)
 	if err != nil {
 		return err
@@ -45,6 +45,7 @@ func downloadCover(releaseID, outputDestination string) error {
 		if err != nil {
 			return err
 		}
+		log.Println("  Done.")
 	case "image/png":
 		out, err := os.Create(outputDestination + ".png")
 		if err != nil {
@@ -55,6 +56,7 @@ func downloadCover(releaseID, outputDestination string) error {
 		if err != nil {
 			return err
 		}
+		log.Println("  Done.")
 	default:
 		return errors.New("Unhandled MIME type " + imgData.Mimetype)
 	}
@@ -66,13 +68,13 @@ func getReleaseMBID(artist, release string) (string, error) {
 
 	var artistName, artistMBID = SearchArtistMBID(artist)
 	if artistName == "[no artist]" {
-		log.Printf("No Artist matching '%s' was found.\n", artist)
+		log.Printf("  * No Artist matching '%s' was found.\n", artist)
 		return "", errors.New("Artist not found")
 	} else if artistName != artist {
 		if strings.ToLower(artistName) == strings.ToLower(artist) {
 			artistName, artistMBID = SearchArtistMBID(artistName)
 		} else {
-			log.Printf("No Artist matching '%s' was found. Did you mean '%s'?\n", artist, artistName)
+			log.Printf("  * No Artist matching '%s' was found. Did you mean '%s'?\n", artist, artistName)
 			return "", errors.New("Artist not found")
 		}
 	}
@@ -81,7 +83,7 @@ func getReleaseMBID(artist, release string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	log.Printf("Found Release '%s' with MBID '%s'\n", release, recordingMBID)
+	log.Printf("  Found Release '%s' with MBID '%s'\n", release, recordingMBID)
 
 	return recordingMBID, nil
 }
@@ -90,12 +92,12 @@ func getReleaseMBID(artist, release string) (string, error) {
 func FetchCover(artist, release, outputDir string) {
 	relMBID, err := getReleaseMBID(artist, release)
 	if err != nil {
-		log.Fatal("Release MBID not found:", err)
+		log.Fatal("  * Release MBID not found:", err)
 	}
 
 	downloadErrors := downloadCover(relMBID, outputDir+"/"+release+"/"+release)
 	if downloadErrors != nil {
-		log.Fatal("Failed to download cover:", err)
+		log.Fatal("  ! Failed to download cover:", err)
 	}
 }
 
@@ -131,13 +133,13 @@ func FetchRandomMissing(dbPath, albumPath string, maxAlbums int) {
 
 		relMBID, err := getReleaseMBID(artist, album)
 		if err != nil {
-			log.Println("Release MBID not found:", err)
+			log.Println("  * Release MBID not found:", err)
 			continue
 		}
 
 		err = downloadCover(relMBID, albumPath+"/"+artist+"/"+album+"/Folder")
 		if err != nil {
-			log.Println("Failed to download cover:", err)
+			log.Println("  ! Failed to download cover:", err)
 			continue
 		}
 	}
