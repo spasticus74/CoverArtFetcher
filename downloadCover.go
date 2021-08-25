@@ -66,15 +66,15 @@ func downloadCover(releaseID, outputDestination string) error {
 func getReleaseMBID(artist, release string) (string, error) {
 	log.Printf("Searching for '%s' - '%s' ...\n", artist, release)
 
-	var artistName, artistMBID = SearchArtistMBID(artist)
-	if artistName == "[no artist]" {
+	var mbArtist, artistMBID = SearchArtistMBID(artist)
+	if mbArtist == "[no artist]" {
 		log.Printf("  * No Artist matching '%s' was found.\n", artist)
 		return "", errors.New("Artist not found")
-	} else if artistName != artist {
-		if strings.ToLower(artistName) == strings.ToLower(artist) {
-			artistName, artistMBID = SearchArtistMBID(artistName)
+	} else if mbArtist != artist {
+		if strings.ToLower(mbArtist) == strings.ToLower(artist) {
+			mbArtist, artistMBID = SearchArtistMBID(mbArtist)
 		} else {
-			log.Printf("  * No Artist matching '%s' was found. Did you mean '%s'?\n", artist, artistName)
+			log.Printf("  * No Artist matching '%s' was found. Did you mean '%s'?\n", artist, mbArtist)
 			return "", errors.New("Artist not found")
 		}
 	}
@@ -90,12 +90,12 @@ func getReleaseMBID(artist, release string) (string, error) {
 
 // Download a single specified cover
 func FetchCover(artist, release, outputDir string) {
-	relMBID, err := getReleaseMBID(artist, release)
+	releaseMBID, err := getReleaseMBID(artist, release)
 	if err != nil {
 		log.Fatal("  * Release MBID not found:", err)
 	}
 
-	downloadErrors := downloadCover(relMBID, outputDir+"/"+release+"/"+release)
+	downloadErrors := downloadCover(releaseMBID, outputDir+"/"+release+"/"+release)
 	if downloadErrors != nil {
 		log.Fatal("  ! Failed to download cover:", err)
 	}
@@ -131,13 +131,13 @@ func FetchRandomMissing(dbPath, albumPath string, maxAlbums int) {
 			log.Fatal("Error processing data: ", err)
 		}
 
-		relMBID, err := getReleaseMBID(artist, album)
+		releaseMBID, err := getReleaseMBID(artist, album)
 		if err != nil {
 			log.Println("  * Release MBID not found:", err)
 			continue
 		}
 
-		err = downloadCover(relMBID, albumPath+"/"+artist+"/"+album+"/Folder")
+		err = downloadCover(releaseMBID, albumPath+"/"+artist+"/"+album+"/Folder")
 		if err != nil {
 			log.Println("  ! Failed to download cover:", err)
 			continue
