@@ -18,6 +18,7 @@ func main() {
 	dbPtr := flag.String("d", "", "Path to the Navidrome database.")
 	libraryPtr := flag.String("m", "", "Path to the music library.")
 	maxCountPtr := flag.Int("c", 10, "Max number of covers to fetch")
+	excludePtr := flag.String("x", "", "Path to the exclusion file")
 
 	logPtr := flag.String("l", "", "Path to log file")
 
@@ -36,7 +37,7 @@ func main() {
 	if (len(*artistPtr) > 0) && (len(*recordingPtr) > 0) {
 		FetchCover(*artistPtr, *recordingPtr, *destinationPtr)
 	} else if (len(*dbPtr) > 0) && (len(*libraryPtr) > 0) {
-		FetchRandomMissing(*dbPtr, *libraryPtr, *maxCountPtr)
+		FetchRandomMissing(*dbPtr, *libraryPtr, *excludePtr, *maxCountPtr)
 	} else {
 		log.Fatal("You must provide both an Artist and a Recording name, or a database and library path.")
 	}

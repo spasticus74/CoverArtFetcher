@@ -3,10 +3,12 @@ package main
 import (
 	"bytes"
 	"database/sql"
+	"encoding/csv"
 	"errors"
 	"image"
 	"image/jpeg"
 	"image/png"
+	"io"
 	"log"
 	"math/rand"
 	"os"
@@ -16,6 +18,18 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	caa "github.com/mineo/gocaa"
 )
+
+type exclusion struct {
+	artist string
+	album  string
+}
+
+func (e *exclusion) ToString() []string {
+	s := make([]string, 2)
+	s[0] = e.artist
+	s[1] = e.album
+	return s
+}
 
 func downloadCover(releaseID, outputDestination string) error {
 	c := caa.NewCAAClient("CoverArtFetcher")
@@ -105,7 +119,15 @@ var artist string
 var album string
 
 // Download a number of missing covers
-func FetchRandomMissing(dbPath, albumPath string, maxAlbums int) {
+func FetchRandomMissing(dbPath, albumPath, excludePath string, maxAlbums int) {
+	var newExclusions = false
+
+	var exclusions []exclusion
+	exclusions, err := ReadExcludeFile(excludePath)
+	if err != nil {
+		log.Print("unable to read exclusion file (" + excludePath + ") " + err.Error())
+	}
+
 	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
 		log.Fatal("Error opening"+dbPath+":", err)
@@ -131,16 +153,88 @@ func FetchRandomMissing(dbPath, albumPath string, maxAlbums int) {
 			log.Fatal("Error processing data: ", err)
 		}
 
+		if Exclude(artist, album, exclusions) {
+			log.Println("  - Skipping known missing file")
+			continue
+		}
+
 		releaseMBID, err := getReleaseMBID(artist, album)
 		if err != nil {
+			newExclusions = true
+			exclusions = append(exclusions, exclusion{artist: artist, album: album})
 			log.Println("  * Release MBID not found:", err)
 			continue
 		}
 
 		err = downloadCover(releaseMBID, albumPath+"/"+artist+"/"+album+"/Folder")
 		if err != nil {
+			newExclusions = true
+			exclusions = append(exclusions, exclusion{artist: artist, album: album})
 			log.Println("  ! Failed to download cover:", err)
 			continue
 		}
 	}
+
+	if newExclusions {
+		_ = WriteExcludeFile(excludePath, exclusions)
+	}
+}
+
+func ReadExcludeFile(exc string) ([]exclusion, error) {
+	var ex []exclusion
+
+	f, err := os.Open(exc)
+	if err != nil {
+		return ex, err
+	}
+	defer f.Close()
+
+	r := csv.NewReader(f)
+	for {
+		record, err := r.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return ex, err
+		}
+
+		ex = append(ex, exclusion{artist: record[0], album: record[1]})
+	}
+
+	log.Printf("Read %d exclusions\n", len(ex))
+	return ex, nil
+}
+
+func WriteExcludeFile(exc string, exclusions []exclusion) error {
+	f, err := os.OpenFile(exc, os.O_RDWR|os.O_CREATE, 0755)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	r := csv.NewWriter(f)
+
+	for _, e := range exclusions {
+		err := r.Write(e.ToString())
+		if err != nil {
+			log.Fatal("error updating exclude file: " + err.Error())
+		}
+	}
+	r.Flush()
+
+	log.Printf("\nWrote %d exclusions to %s\n", len(exclusions), exc)
+	return nil
+}
+
+func Exclude(artist, album string, exclusions []exclusion) bool {
+	var found = false
+
+	for _, e := range exclusions {
+		if artist == e.artist && album == e.album {
+			found = true
+			break
+		}
+	}
+	return found
 }
